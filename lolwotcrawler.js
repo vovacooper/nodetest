@@ -151,18 +151,18 @@ var crawl = function (i, lolwotlist, callback) {
     }
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, "home", function (err, article) {
         if (err) {
-            winston.log('debug',err)
+            winston.log('debug',err);
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
-                winston.log('warn', err.message)
+                winston.log('warn', err.message);
             }else {
-                winston.log('debug', i + " - done: " + article.title)
+                winston.log('debug', i + " - done: " + article.title);
             }
             crawl(i+1, lolwotlist, callback);
         });
     });
-}
+};
 
 
 //Load To File
@@ -194,9 +194,9 @@ jsonfile.readFile(file, function (err, obj) {
     // console.dir(obj)
     crawl(0, obj, function (err, res) {
         if (err) {
-            winston.log('debug',err)
+            winston.log('debug',err);
         }
-        winston.log('debug',res)
+        winston.log('debug',res);
     });
 })
 

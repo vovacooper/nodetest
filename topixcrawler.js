@@ -119,7 +119,7 @@ var crawlForSlideshow = function (num, callback) {
                 // winston.log('debug',"-----BAD----" + num);
                 // winston.log('debug',info);
                 // winston.log('debug',article);
-                callback("error: cant parse")
+                callback("error: cant parse");
             }
         });
 }
@@ -132,7 +132,7 @@ var callbackfunction = function (err, article) {
         winston.log('debug',i + " - err: " + err);
     } else {
         winston.log('debug',i + " - done: " + article.title)
-        good_array.push(i)
+        good_array.push(i);
     }
     i += 1;
     if (i < 19000) {

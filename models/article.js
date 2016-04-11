@@ -167,6 +167,8 @@ Article.create = function (props, callback) {
 
     // props.id = uuid.v1();
     props.id = props.title.toLowerCase().replace(/[ !?'"]/g, '-').replace(/[,.'’_?!@#$%^&*()+~]/g, '');
+    props.id = props.id.replace(/[^\x20-\x7E]+/g, '');
+
     while (props.id[0] == "-") {
         props.id = props.id.slice(1);
     }
@@ -209,7 +211,6 @@ Article.create = function (props, callback) {
 
     if (props.image_url != undefined) {
         request.post({
-            // url: 'http://dozenlikes.com/img/',
             url: process.env['IMAGE_SERVICE_URL'],
             json: {
                 image_url: props.image_url
@@ -225,7 +226,6 @@ Article.create = function (props, callback) {
             var params = {
                 props: props
             };
-
             create_article(params);
         });
     } else {
@@ -247,26 +247,26 @@ Article.createFromJson = function (article, callback) {
 
         image_url: article.image_url,
         description: article.description
-    }
+    };
 
     Article.create(article_prop, function (err, art) {
         if (err) {
             // console.log(err);
             callback(err);
-            return
+            return;
         }
         if (article.objects[0] == undefined) {
             // console.log("there are no pictures ?!?!?!?!")
             // console.log(article)
-            callback("there are no pictures ?!?!?!?! article:" + article)
-            return
+            callback("there are no pictures ?!?!?!?! article:" + article);
+            return;
         }
 
         ArticlePage.create(article.objects[0], function (err, firstObj) {
             if (err) {
                 // console.log(err);
                 callback(err);
-                return
+                return;
             }
 
             art.addFirstObj(firstObj,
@@ -274,7 +274,7 @@ Article.createFromJson = function (article, callback) {
                     if (err) {
                         // console.log(err);
                         callback(err);
-                        return
+                        return;
                     }
                 }
             );
@@ -284,14 +284,13 @@ Article.createFromJson = function (article, callback) {
                     if (err) {
                         // console.log(err);
                         callback(err);
-                        return
+                        return;
                     }
-                    callback(undefined, article)
+                    callback(undefined, article);
                 });
             } else {
-                callback(undefined, article)
+                callback(undefined, article);
             }
-
         });
     })
 };
@@ -301,20 +300,20 @@ Article.createChain = function (obj, array, callback) {
         if (err) {
             // console.log(err);
             callback(err);
-            return
+            return;
         }
 
         obj.setRel(newelement, function (err) {
             if (err) {
                 // console.log(err);
                 callback(err);
-                return
+                return;
             }
             if (array.length > 1) {
                 array.splice(0, 1);
                 Article.createChain(newelement, array, callback);
             } else {
-                callback()
+                callback();
             }
         });
     })
@@ -334,68 +333,5 @@ db.createConstraint({
     } else {
         // Constraint already present; no need to log anything.
     }
-})
+});
 
-
-// Article.prototype.unfollow = function (other, callback) {
-//     var query = [
-//         'MATCH (user:User {username: {thisUsername}})',
-//         'MATCH (other:User {username: {otherUsername}})',
-//         'MATCH (user) -[rel:follows]-> (other)',
-//         'DELETE rel',
-//     ].join('\n')
-//
-//     var params = {
-//         thisUsername: this.username,
-//         otherUsername: other.username,
-//     };
-//
-//     db.cypher({
-//         query: query,
-//         params: params,
-//     }, function (err) {
-//         callback(err);
-//     });
-// };
-
-// Calls callback w/ (err, following, others), where following is an array of
-// users this user follows, and others is all other users minus him/herself.
-// Article.prototype.getFollowingAndOthers = function (callback) {
-//     // Query all users and whether we follow each one or not:
-//     var query = [
-//         'MATCH (user:User {username: {thisUsername}})',
-//         'MATCH (other:User)',
-//         'OPTIONAL MATCH (user) -[rel:follows]-> (other)',
-//         'RETURN other, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-//     ].join('\n')
-//
-//     var params = {
-//         thisUsername: this.username,
-//     };
-//
-//     var user = this;
-//     db.cypher({
-//         query: query,
-//         params: params,
-//     }, function (err, results) {
-//         if (err) return callback(err);
-//
-//         var following = [];
-//         var others = [];
-//
-//         for (var i = 0; i < results.length; i++) {
-//             var other = new User(results[i]['other']);
-//             var follows = results[i]['COUNT(rel)'];
-//
-//             if (user.username === other.username) {
-//                 continue;
-//             } else if (follows) {
-//                 following.push(other);
-//             } else {
-//                 others.push(other);
-//             }
-//         }
-//
-//         callback(null, following, others);
-//     });
-// };
