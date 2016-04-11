@@ -3,6 +3,7 @@
 
 //logger
 var winston = require('winston');
+winston.level = 'debug';
 winston.add(winston.transports.File, {filename: '/var/log/dozenlikes/topix.log'});
 
 var Crawler = require("js-crawler");

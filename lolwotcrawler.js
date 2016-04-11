@@ -2,6 +2,7 @@
 
 //logger
 var winston = require('winston');
+winston.level = 'debug';
 winston.add(winston.transports.File, {filename: '/var/log/dozenlikes/lolwot.log'});
 
 
@@ -154,9 +155,9 @@ var crawl = function (i, lolwotlist, callback) {
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
-                winston.log('debug',err)
+                winston.log('warn', err.message)
             }else {
-                winston.log('debug',i + " - done: " + article.title)
+                winston.log('debug', i + " - done: " + article.title)
             }
             crawl(i+1, lolwotlist, callback);
         });

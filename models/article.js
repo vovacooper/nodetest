@@ -4,9 +4,8 @@
 var neo4j = require('neo4j');
 var errors = require('./errors');
 var config = require('../config/config');
-
 var winston = require('winston');
-winston.add(winston.transports.File, {filename: process.env['LOG_FILE']});
+// winston.add(winston.transports.File, {filename: process.env['LOG_FILE']});
 
 
 
@@ -331,7 +330,7 @@ db.createConstraint({
         winston.log('exception', err);     // Failing fast for now, by crash the application.
     }
     if (constraint) {
-        console.log('(Registered unique article constraint.)');
+        winston.log('(Registered unique article constraint.)');
     } else {
         // Constraint already present; no need to log anything.
     }
