@@ -1,5 +1,8 @@
 // article.js
 // article model logic.
+var winston = require('winston');
+winston.add(winston.transports.File, {filename: process.env['LOG_FILE']});
+
 
 var neo4j = require('neo4j');
 var errors = require('./errors');
@@ -321,8 +324,9 @@ db.createConstraint({
     label: 'Article',
     property: 'id',
 }, function (err, constraint) {
-    if (err)
-        throw err;     // Failing fast for now, by crash the application.
+    if (err){
+        winston.log('exception', err);     // Failing fast for now, by crash the application.
+    }
     if (constraint) {
         console.log('(Registered unique article constraint.)');
     } else {

@@ -106,29 +106,29 @@ var crawlForSlideshow = function (url, image_url, category, callback) {
             article.objects.push(page2);
         }
 
-        // console.log(article);
+        // winston.log('debug',article);
         callback(undefined, article);
     }
 
     request(url + '/1', function (error, response, html) {
         if (!error && response.statusCode == 200) {
-            // console.log(html);
+            // winston.log('debug',html);
             pages.push(html);
             request(url + '/2', function (error, response, html) {
                 if (!error && response.statusCode == 200) {
-                    // console.log(html);
+                    // winston.log('debug',html);
                     pages.push(html);
                     request(url + '/3', function (error, response, html) {
                         if (!error && response.statusCode == 200) {
-                            // console.log(html);
+                            // winston.log('debug',html);
                             pages.push(html);
                             request(url + '/4', function (error, response, html) {
                                 if (!error && response.statusCode == 200) {
-                                    // console.log(html);
+                                    // winston.log('debug',html);
                                     pages.push(html);
                                     request(url + '/5', function (error, response, html) {
                                         if (!error && response.statusCode == 200) {
-                                            // console.log(html);
+                                            // winston.log('debug',html);
                                             pages.push(html);
                                             parsefunction();
                                         }
@@ -150,13 +150,13 @@ var crawl = function (i, lolwotlist, callback) {
     }
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, "home", function (err, article) {
         if (err) {
-            console.log(err)
+            winston.log('debug',err)
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
-                console.log(err)
+                winston.log('debug',err)
             }else {
-                console.log(i + " - done: " + article.title)
+                winston.log('debug',i + " - done: " + article.title)
             }
             crawl(i+1, lolwotlist, callback);
         });
@@ -167,7 +167,7 @@ var crawl = function (i, lolwotlist, callback) {
 //Load To File
 // var lolwotlist = [];
 // var get_links = function (offset, callback) {
-//     console.log("offset: " + offset);
+//     winston.log('debug',"offset: " + offset);
 //     request('http://www.lolwot.com/posts.php?category=home&cb=1460288040395&offset=' + offset, function (error, response, html) {
 //         if (!error && response.statusCode == 200 && html != "[]") {
 //             var obj = eval(html);
@@ -185,7 +185,7 @@ var crawl = function (i, lolwotlist, callback) {
 //     jsonfile.writeFile(file, res, function (err) {
 //         console.error(err)
 //     })
-//     console.log("done writing to file");
+//     winston.log('debug',"done writing to file");
 // })
 
 //Load From File
@@ -193,9 +193,9 @@ jsonfile.readFile(file, function (err, obj) {
     // console.dir(obj)
     crawl(0, obj, function (err, res) {
         if (err) {
-            console.log(err)
+            winston.log('debug',err)
         }
-        console.log(res)
+        winston.log('debug',res)
     });
 })
 

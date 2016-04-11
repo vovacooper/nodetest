@@ -11,7 +11,7 @@ var cheerio = require('cheerio');
 var Article = require('./models/article.js')
 
 var crawlForSlideshow = function (num, callback) {
-    // console.log(" + + + starting " + num);
+    // winston.log('debug'," + + + starting " + num);
     new Crawler().configure({depth: 1})
         .crawl("http://stars.topix.com/slideshow/" + num, function onSuccess(page) {
             $ = cheerio.load(page.content);
@@ -43,12 +43,12 @@ var crawlForSlideshow = function (num, callback) {
             var is_slider = $("script:contains('st_request.itemSubtype = \"slideshow\"')");
             var is_slider1 = $("script:contains('st_request.action = \"slideshow\"')");
             if (is_slider == false && is_slider1 == false) {
-                // console.log("-----BAD----" + num);
-                // console.log(info);
+                // winston.log('debug',"-----BAD----" + num);
+                // winston.log('debug',info);
                 // return
             } else {
-                // console.log("-----GOOD----" + num);
-                // console.log(info);
+                // winston.log('debug',"-----GOOD----" + num);
+                // winston.log('debug',info);
                 // return
             }
 
@@ -108,16 +108,16 @@ var crawlForSlideshow = function (num, callback) {
                 article.pages = article.objects.length;
 
                 Article.createFromJson(article, callback);
-                // console.log("-----GOOD----" + num);
-                // console.log(article.pages)
-                // console.log(info);
+                // winston.log('debug',"-----GOOD----" + num);
+                // winston.log('debug',article.pages)
+                // winston.log('debug',info);
                 // callback()
-                // console.log(article);
+                // winston.log('debug',article);
             } else {
-                // console.log(" - - - empty " + num)
-                // console.log("-----BAD----" + num);
-                // console.log(info);
-                // console.log(article);
+                // winston.log('debug'," - - - empty " + num)
+                // winston.log('debug',"-----BAD----" + num);
+                // winston.log('debug',info);
+                // winston.log('debug',article);
                 callback("error: cant parse")
             }
         });
@@ -128,17 +128,17 @@ var i = 15000
 var good_array = []
 var callbackfunction = function (err, article) {
     if (err) {
-        console.log(i + " - err: " + err);
+        winston.log('debug',i + " - err: " + err);
     } else {
-        console.log(i + " - done: " + article.title)
+        winston.log('debug',i + " - done: " + article.title)
         good_array.push(i)
     }
     i += 1;
     if (i < 19000) {
         crawlForSlideshow(i, callbackfunction);
     } else {
-        console.log(good_array);
-        console.log("----------");
+        winston.log('debug',good_array);
+        winston.log('debug',"----------");
     }
 }
 crawlForSlideshow(i, callbackfunction);
