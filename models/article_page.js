@@ -4,6 +4,7 @@ var neo4j = require('neo4j');
 var errors = require('./errors');
 var config = require('../config/config');
 var winston = require('winston');
+winston.level = 'debug';
 // winston.add(winston.transports.File, {filename: process.env['LOG_FILE']});
 
 var uuid = require('node-uuid');

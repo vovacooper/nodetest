@@ -19,13 +19,14 @@ var path = require('path');
 var appDir = path.dirname(require.main.filename);
 var file = appDir + '/tmp/data.json'
 
-var crawlForSlideshow = function (url, image_url, category, callback) {
+var crawlForSlideshow = function (url, image_url, callback) {
     var pages = [];
     var parsefunction = function () {
         var article = {
             type: "slideshow",
-            category: category,
-            subcategory: "",
+            categories: [],
+            tags: [],
+            source: "lolwot",
 
             image_url: image_url,
             title: "",
@@ -40,6 +41,16 @@ var crawlForSlideshow = function (url, image_url, category, callback) {
         article.title = $("article > h1").text();
         article.description = $($("article > p")[0]).text();
 
+
+        $('article').attr('class').split(/\s+/).forEach(function (val) {
+            var arr = val.split(/-+/g);
+            if (arr[0] == 'category') {
+                article.categories.push(arr.splice(1).join('_'));
+            }
+            if (arr[0] == 'tag') {
+                article.tags.push(arr.splice(1).join('_'));
+            }
+        });
 
         // page 1
         var page1 = {
@@ -149,17 +160,17 @@ var crawl = function (i, lolwotlist, callback) {
     if (i > lolwotlist.length) {
         callback(undefined, "Done");
     }
-    crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, "home", function (err, article) {
+    crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, function (err, article) {
         if (err) {
-            winston.log('debug',err);
+            winston.log('debug', err);
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
                 winston.log('warn', err.message);
-            }else {
-                winston.log('debug', i + " - done: " + article.title);
+            } else {
+                winston.log('info', i + " - done: " + article.title);
             }
-            crawl(i+1, lolwotlist, callback);
+            crawl(i + 1, lolwotlist, callback);
         });
     });
 };
@@ -194,9 +205,9 @@ jsonfile.readFile(file, function (err, obj) {
     // console.dir(obj)
     crawl(0, obj, function (err, res) {
         if (err) {
-            winston.log('debug',err);
+            winston.log('debug', err);
         }
-        winston.log('debug',res);
+        winston.log('debug', res);
     });
 })
 

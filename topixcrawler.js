@@ -55,8 +55,9 @@ var crawlForSlideshow = function (num, callback) {
 
             var article = {
                 type: "slideshow",
-                category: "celebs",
-                subcategory: "stars",
+                categories: ["celebs", "lists"],
+                tags: [],
+                source: "topix",
                 
                 title: "",
                 description: ""
@@ -131,15 +132,15 @@ var callbackfunction = function (err, article) {
     if (err) {
         winston.log('debug',i + " - err: " + err);
     } else {
-        winston.log('debug',i + " - done: " + article.title)
+        winston.log('info',i + " - done: " + article.title)
         good_array.push(i);
     }
     i += 1;
     if (i < 19000) {
         crawlForSlideshow(i, callbackfunction);
     } else {
-        winston.log('debug',good_array);
-        winston.log('debug',"----------");
+        winston.log('info',good_array);
+        winston.log('info',"----------");
     }
 }
 crawlForSlideshow(i, callbackfunction);

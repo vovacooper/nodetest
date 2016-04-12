@@ -5,8 +5,8 @@ var neo4j = require('neo4j');
 var errors = require('./errors');
 var config = require('../config/config');
 var winston = require('winston');
+winston.level = 'debug';
 // winston.add(winston.transports.File, {filename: process.env['LOG_FILE']});
-
 
 
 var uuid = require('node-uuid');
@@ -85,17 +85,16 @@ Article.prototype.del = function (callback) {
 };
 
 //Rel
-
 Article.prototype.addFirstObj = function (other, callback) {
     var query = [
         'MATCH (article:Article {id: {article_id}})',
         'MATCH (article_page:ArticlePage {id: {article_page_id}})',
-        'MERGE (article) -[rel:Next]-> (article_page)',
-    ].join('\n')
+        'MERGE (article) -[rel:Next]-> (article_page)'
+    ].join('\n');
 
     var params = {
         article_id: this.id,
-        article_page_id: other.id,
+        article_page_id: other.id
     };
 
     db.cypher({
@@ -105,6 +104,50 @@ Article.prototype.addFirstObj = function (other, callback) {
         callback(err);
     });
 };
+
+Article.prototype.addTags = function (tags, callback) {
+    var query = ['MATCH (a:Article {id:{article_id}})'];
+    tags.forEach(function (tag) {
+        var temp = "a" + uuid.v1().replace(/-/g, "");
+        query.push('MERGE (' + temp + ':Tag:' + tag + ' )');
+        query.push('MERGE (' + temp + ' )<-[:IS]-(a)');
+    });
+    query = query.join('\n');
+
+    var params = {
+        article_id: this.id
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err) {
+        callback(err);
+    });
+};
+
+Article.prototype.addCategories = function (categories, callback) {
+    var query = ['MATCH (a:Article {id:{article_id}})'];
+    categories.forEach(function (category) {
+        var temp = "a" + uuid.v1().replace(/-/g, "");
+        query.push('MERGE (' + temp + ':Category:' + category + ' )');
+        query.push('MERGE (' + temp + ')<-[:IS]-(a)');
+    });
+    query = query.join('\n');
+
+    var params = {
+        article_id: this.id
+    };
+
+    db.cypher({
+        query: query,
+        params: params
+    }, function (err) {
+        callback(err);
+    });
+};
+
+
 
 
 // Static methods:
@@ -236,65 +279,6 @@ Article.create = function (props, callback) {
     }
 };
 
-Article.createFromJson = function (article, callback) {
-    var article_prop = {
-        title: article.title,
-        type: article.type,
-        pages: article.pages,
-
-        category: article.category,
-        subcategory: article.subcategory,
-
-        image_url: article.image_url,
-        description: article.description
-    };
-
-    Article.create(article_prop, function (err, art) {
-        if (err) {
-            // console.log(err);
-            callback(err);
-            return;
-        }
-        if (article.objects[0] == undefined) {
-            // console.log("there are no pictures ?!?!?!?!")
-            // console.log(article)
-            callback("there are no pictures ?!?!?!?! article:" + article);
-            return;
-        }
-
-        ArticlePage.create(article.objects[0], function (err, firstObj) {
-            if (err) {
-                // console.log(err);
-                callback(err);
-                return;
-            }
-
-            art.addFirstObj(firstObj,
-                function (err) {
-                    if (err) {
-                        // console.log(err);
-                        callback(err);
-                        return;
-                    }
-                }
-            );
-            if (article.objects.length > 1) {
-                article.objects.splice(0, 1);
-                Article.createChain(firstObj, article.objects, function (err) {
-                    if (err) {
-                        // console.log(err);
-                        callback(err);
-                        return;
-                    }
-                    callback(undefined, article);
-                });
-            } else {
-                callback(undefined, article);
-            }
-        });
-    })
-};
-
 Article.createChain = function (obj, array, callback) {
     ArticlePage.create(array[0], function (err, newelement) {
         if (err) {
@@ -320,12 +304,73 @@ Article.createChain = function (obj, array, callback) {
 }
 
 
+
+Article.createFromJson = function (raw_article, callback) {
+    var article_prop = {
+        title: raw_article.title,
+        type: raw_article.type,
+        pages: raw_article.pages,
+
+        source: raw_article.source,
+
+        image_url: raw_article.image_url,
+        description: raw_article.description
+    };
+
+    Article.create(article_prop, function (err, article) {
+        if (err) {
+            callback(err);
+            return;
+        }
+        if (raw_article.objects[0] == undefined) {
+            callback("there are no pictures ?!?!?!?! article:" + raw_article);
+            return;
+        }
+        article.addTags(raw_article.tags, function (err) {
+            if(err) winston.log('exception', err);
+        });
+        article.addCategories(raw_article.categories, function (err) {
+            if(err) winston.log('exception', err);
+        });
+
+        ArticlePage.create(raw_article.objects[0], function (err, firstObj) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            article.addFirstObj(firstObj,
+                function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                }
+            );
+            if (raw_article.objects.length > 1) {
+                raw_article.objects.splice(0, 1);
+                Article.createChain(firstObj, raw_article.objects, function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(undefined, raw_article);
+                });
+            } else {
+                callback(undefined, raw_article);
+            }
+        });
+    })
+};
+
+
+
 // Static initialization:
 db.createConstraint({
     label: 'Article',
     property: 'id',
 }, function (err, constraint) {
-    if (err){
+    if (err) {
         winston.log('exception', err);     // Failing fast for now, by crash the application.
     }
     if (constraint) {
