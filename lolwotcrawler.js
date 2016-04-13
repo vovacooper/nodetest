@@ -77,7 +77,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             description: ""
         };
 
-        page2.title = $($("article > h2")[0]).text();
+        page2.title = $($("article > h2")[1]).text();
         page2.image_url = $($("article > p > img")[1]).attr()['src']
         page2.description = $($("article > p")[5]).text();
 
@@ -203,7 +203,7 @@ var crawl = function (i, lolwotlist, callback) {
 //Load From File
 jsonfile.readFile(file, function (err, obj) {
     // console.dir(obj)
-    crawl(0, obj, function (err, res) {
+    crawl(50, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
