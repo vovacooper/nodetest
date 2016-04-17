@@ -9,7 +9,7 @@ winston.add(winston.transports.File, {filename: '/var/log/dozenlikes/lolwot.log'
 var Crawler = require("js-crawler");
 
 var cheerio = require('cheerio');
-var Article = require('./models/article.js')
+var Article = require('../models/article.js')
 
 var request = require('request');
 
@@ -17,12 +17,14 @@ var jsonfile = require('jsonfile')
 var util = require('util')
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
-var file = appDir + '/tmp/data.json'
+var file = appDir + '/../tmp/data.json'
 
 var crawlForSlideshow = function (url, image_url, callback) {
     var pages = [];
     var parsefunction = function () {
         var article = {
+            source_url: url,
+
             type: "slideshow",
             categories: [],
             tags: [],
@@ -33,7 +35,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             description: "",
 
             objects: [],
-            pages: 10
+            pages: 0
         }
 
         $ = cheerio.load(pages[0]);
@@ -52,74 +54,99 @@ var crawlForSlideshow = function (url, image_url, callback) {
             }
         });
 
-        // page 1
-        var page1 = {
-            type: "img",
-            title: "",
-            image_url: "",
-            width: 0,
-            height: 0,
-            description: ""
-        };
+        for (var j = 0; j < 5; j++) {
+            $ = cheerio.load(pages[j]);
+            var num_pages = $('article h2').length;
 
-        page1.title = $($("article > h2")[0]).text();
-        page1.image_url = $($("article > p > img")[0]).attr()['src']
-        page1.description = $($("article > p")[2]).text();
+            for (var i = 0; i < num_pages; i++) {
+                // page 1
+                var page = {
+                    type: "img",
+                    title: "",
+                    image_url: "",
+                    width: 0,
+                    height: 0,
+                    description: ""
+                };
 
-        article.objects.push(page1);
+                page.title = $($("article > h2")[0]).text();
+                page.image_url = $($($("article > h2")[0]).next()).find('img').attr()['src'];
+                page.description = $($("article > h2")[0]).next().next().text();
 
-        var page2 = {
-            type: "img",
-            title: "",
-            image_url: "",
-            width: 0,
-            height: 0,
-            description: ""
-        };
-
-        page2.title = $($("article > h2")[1]).text();
-        page2.image_url = $($("article > p > img")[1]).attr()['src']
-        page2.description = $($("article > p")[5]).text();
-
-        article.objects.push(page2);
-
-
-        for (var i = 1; i < 5; i++) {
-            $ = cheerio.load(pages[i]);
-            // page 1
-            var page1 = {
-                type: "img",
-                title: "",
-                image_url: "",
-                width: 0,
-                height: 0,
-                description: ""
-            };
-
-            page1.title = $($("article > h2")[0]).text();
-            page1.image_url = $($("article > p > img")[0]).attr()['src']
-            page1.description = $($("article > p")[1]).text();
-
-            article.objects.push(page1);
-
-            var page2 = {
-                type: "img",
-                title: "",
-                image_url: "",
-                width: 0,
-                height: 0,
-                description: ""
-            };
-
-            page2.title = $($("article > h2")[1]).text();
-            page2.image_url = $($("article > p > img")[1]).attr()['src']
-            page2.description = $($("article > p")[4]).text();
-
-            article.objects.push(page2);
+                article.objects.push(page);
+                article.pages += 1;
+            }
         }
+        callback(undefined, article);
+
+        // // page 1
+        // var page1 = {
+        //     type: "img",
+        //     title: "",
+        //     image_url: "",
+        //     width: 0,
+        //     height: 0,
+        //     description: ""
+        // };
+        //
+        // page1.title = $($("article > h2")[0]).text();
+        // page1.image_url = $($("article > p > img")[0]).attr()['src']
+        // page1.description = $($("article > p")[2]).text();
+        //
+        // article.objects.push(page1);
+        //
+        // var page2 = {
+        //     type: "img",
+        //     title: "",
+        //     image_url: "",
+        //     width: 0,
+        //     height: 0,
+        //     description: ""
+        // };
+        //
+        // page2.title = $($("article > h2")[1]).text();
+        // page2.image_url = $($("article > p > img")[1]).attr()['src']
+        // page2.description = $($("article > p")[5]).text();
+        //
+        // article.objects.push(page2);
+
+
+        // for (var i = 1; i < 5; i++) {
+        //     $ = cheerio.load(pages[i]);
+        //     // page 1
+        //     var page1 = {
+        //         type: "img",
+        //         title: "",
+        //         image_url: "",
+        //         width: 0,
+        //         height: 0,
+        //         description: ""
+        //     };
+        //
+        //     page1.title = $($("article > h2")[0]).text();
+        //     page1.image_url = $($("article > p > img")[0]).attr()['src']
+        //     page1.description = $($("article > p")[1]).text();
+        //
+        //     article.objects.push(page1);
+        //
+        //     var page2 = {
+        //         type: "img",
+        //         title: "",
+        //         image_url: "",
+        //         width: 0,
+        //         height: 0,
+        //         description: ""
+        //     };
+        //
+        //     page2.title = $($("article > h2")[1]).text();
+        //     page2.image_url = $($("article > p > img")[1]).attr()['src']
+        //     page2.description = $($("article > p")[4]).text();
+        //
+        //     article.objects.push(page2);
+        // }
 
         // winston.log('debug',article);
-        callback(undefined, article);
+        // callback(undefined, article);
     }
 
     request(url + '/1', function (error, response, html) {

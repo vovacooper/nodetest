@@ -307,6 +307,8 @@ Article.createChain = function (obj, array, callback) {
 
 Article.createFromJson = function (raw_article, callback) {
     var article_prop = {
+        source_url: raw_article.source_url,
+
         title: raw_article.title,
         type: raw_article.type,
         pages: raw_article.pages,
@@ -314,7 +316,9 @@ Article.createFromJson = function (raw_article, callback) {
         source: raw_article.source,
 
         image_url: raw_article.image_url,
-        description: raw_article.description
+        description: raw_article.description,
+
+        status: "pending"
     };
 
     Article.create(article_prop, function (err, article) {
