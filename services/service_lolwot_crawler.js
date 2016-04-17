@@ -69,9 +69,9 @@ var crawlForSlideshow = function (url, image_url, callback) {
                     description: ""
                 };
 
-                page.title = $($("article > h2")[0]).text();
-                page.image_url = $($($("article > h2")[0]).next()).find('img').attr()['src'];
-                page.description = $($("article > h2")[0]).next().next().text();
+                page.title = $($("article > h2")[i]).text();
+                page.image_url = $($($("article > h2")[i]).next()).find('img').attr()['src'];
+                page.description = $($("article > h2")[i]).next().next().text();
 
                 article.objects.push(page);
                 article.pages += 1;
