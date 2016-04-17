@@ -190,6 +190,10 @@ var crawl = function (i, lolwotlist, callback) {
     if (i > lolwotlist.length) {
         callback(undefined, "Done");
     }
+    if(lolwotlist[i]["ribbon-type"] != "list"){
+        winston.log('debug', "type: " + lolwotlist[i]["ribbon-type"] + " is not list");
+        crawl(i + 1, lolwotlist, callback);
+    }
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, function (err, article) {
         if (err) {
             winston.log('debug', err);
@@ -231,7 +235,7 @@ var crawl = function (i, lolwotlist, callback) {
 
 //Load From File
 jsonfile.readFile(file, function (err, obj) {
-    crawl(2522, obj, function (err, res) {
+    crawl(2532, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
