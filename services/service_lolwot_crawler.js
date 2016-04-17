@@ -196,7 +196,7 @@ var crawl = function (i, lolwotlist, callback) {
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
-                winston.log('warn', "err: " + err.message);
+                winston.log('warn', "err: " + err);
             } else {
                 winston.log('info', i + " - done: " + article.title);
             }
@@ -231,7 +231,7 @@ var crawl = function (i, lolwotlist, callback) {
 
 //Load From File
 jsonfile.readFile(file, function (err, obj) {
-    crawl(2518, obj, function (err, res) {
+    crawl(2522, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
