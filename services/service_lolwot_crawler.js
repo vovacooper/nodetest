@@ -191,7 +191,7 @@ var crawl = function (i, lolwotlist, callback) {
         callback(undefined, "Done");
     }
     if(lolwotlist[i]["ribbon-type"] != "list"){
-        winston.log('debug', "type: " + lolwotlist[i]["ribbon-type"] + " is not list");
+        winston.log('debug', i + " - type: " + lolwotlist[i]["ribbon-type"] + " is not list");
         crawl(i + 1, lolwotlist, callback);
     }
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, function (err, article) {
@@ -200,7 +200,7 @@ var crawl = function (i, lolwotlist, callback) {
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
-                winston.log('warn', "err: " + err);
+                winston.log('warn', i + " - err: " + err);
             } else {
                 winston.log('info', i + " - done: " + article.title);
             }
