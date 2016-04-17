@@ -193,6 +193,7 @@ var crawl = function (i, lolwotlist, callback) {
     if(lolwotlist[i]["ribbon-type"] != "list"){
         winston.log('debug', i + " - type: " + lolwotlist[i]["ribbon-type"] + " is not list");
         crawl(i + 1, lolwotlist, callback);
+        return;
     }
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, function (err, article) {
         if (err) {
