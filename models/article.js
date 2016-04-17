@@ -344,7 +344,7 @@ Article.createFromJson = function (raw_article, callback) {
             return;
         }
         if (raw_article.objects[0] == undefined) {
-            callback("there are no pictures ?!?!?!?! article:" + raw_article);
+            callback("there are no pictures ?!?!?!?! article:" + article.id);
             return;
         }
         article.addTags(raw_article.tags, function (err) {
