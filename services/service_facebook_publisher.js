@@ -11,7 +11,7 @@ FB.setAccessToken('EAACEdEose0cBAIZB48HAa53x9rYrYASfXtVDbY2LskIRdP9dHp0bzpKxO78X
 var link = 'www.dozenlikes.com'
 var body = ""
 
-
+winston.log('info', 'posting to facebook');
 Article.getRandom(function (err, article) {
     if (err) {
         winston.log('debug', err);
