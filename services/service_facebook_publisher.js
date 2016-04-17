@@ -19,10 +19,10 @@ Article.getRandom(function (err, article) {
     }
     FB.api('1013626285396106/feed', 'post', {message: body, link: link + "/" + article.id}, function (res) {
         if (!res || res.error) {
-            console.log(!res ? 'error occurred' : res.error);
+            winston.log('debug', !res ? 'error occurred' : res.error);
             return;
         }
-        console.log("ok :)");
+        winston.log('info', res);
     });
 });
 
