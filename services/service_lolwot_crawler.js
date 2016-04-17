@@ -4,7 +4,7 @@
 var winston = require('winston');
 winston.level = 'debug';
 winston.add(winston.transports.File, {filename: '/var/log/dozenlikes/lolwot.log'});
-
+winston.remove(winston.transports.Console);
 
 var Crawler = require("js-crawler");
 
@@ -231,7 +231,7 @@ var crawl = function (i, lolwotlist, callback) {
 
 //Load From File
 jsonfile.readFile(file, function (err, obj) {
-    crawl(1668, obj, function (err, res) {
+    crawl(1687, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
