@@ -6,7 +6,7 @@ winston.add(winston.transports.File, {filename: '/var/log/dozenlikes/service_fac
 
 
 var FB = require('fb');
-FB.setAccessToken('EAACEdEose0cBAIZB48HAa53x9rYrYASfXtVDbY2LskIRdP9dHp0bzpKxO78XSbZCD2BCrEKk0OHP8450wTIpRrsPUW3bVzDp585vsBWMedVzdcnKTWULkJi4jV7b2lOrlsogSUGNpq352Fz85SLxjtlHefvEZBcHB9ckKpQ8QZDZD');
+FB.setAccessToken('EAAYOLREUziUBABbRtjBqUNzdZAfRPVwN6tG6KeAuq51uiQaBCizjrSRgadfjCvOcV3cV3O9gUtQtyEfQ0lXUepqaFZCZA8GByGUFeENUXxrz4K2og21I3zePKh6YbW8EQo6ie3PT9sV8YfDZAci3qjunbrn5Fn1z3Gx1lLunWQZDZD');
 
 var link = 'www.dozenlikes.com'
 var body = ""
