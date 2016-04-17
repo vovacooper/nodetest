@@ -201,6 +201,25 @@ Article.getAll = function (callback) {
     });
 };
 
+Article.getRandom = function (callback) {
+    var query = [
+        'MATCH (a:Article)',
+        'WITH   count(a) as count ,collect(a) as collection',
+        'RETURN collection[toInt(count * rand())] as article',
+    ].join('\n');
+
+    db.cypher({
+        query: query,
+    }, function (err, results) {
+        if (err) {
+            // console.log(err);
+            callback(err);
+            return
+        }
+        callback(null, new Article(results[0]['article']));
+    });
+};
+
 // Creates the user and persists (saves) it to the db, incl. indexing it:
 Article.create = function (props, callback) {
     var query = [
@@ -303,8 +322,6 @@ Article.createChain = function (obj, array, callback) {
     })
 }
 
-
-
 Article.createFromJson = function (raw_article, callback) {
     var article_prop = {
         source_url: raw_article.source_url,
@@ -366,8 +383,6 @@ Article.createFromJson = function (raw_article, callback) {
         });
     })
 };
-
-
 
 // Static initialization:
 db.createConstraint({
