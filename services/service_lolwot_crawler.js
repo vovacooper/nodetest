@@ -68,13 +68,16 @@ var crawlForSlideshow = function (url, image_url, callback) {
                     height: 0,
                     description: ""
                 };
+                try {
+                    page.title = $($("article > h2")[i]).text();
+                    page.image_url = $($($("article > h2")[i]).next()).find('img').attr()['src'];
+                    page.description = $($("article > h2")[i]).next().next().text();
 
-                page.title = $($("article > h2")[i]).text();
-                page.image_url = $($($("article > h2")[i]).next()).find('img').attr()['src'];
-                page.description = $($("article > h2")[i]).next().next().text();
-
-                article.objects.push(page);
-                article.pages += 1;
+                    article.objects.push(page);
+                    article.pages += 1;
+                } catch (err) {
+                    continue;
+                }
             }
         }
         callback(undefined, article);
@@ -180,7 +183,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             });
         }
     });
-}
+};
 
 
 var crawl = function (i, lolwotlist, callback) {
@@ -202,8 +205,7 @@ var crawl = function (i, lolwotlist, callback) {
     });
 };
 
-
-//Load To File
+// Load To File
 // var lolwotlist = [];
 // var get_links = function (offset, callback) {
 //     winston.log('debug',"offset: " + offset);
@@ -229,12 +231,11 @@ var crawl = function (i, lolwotlist, callback) {
 
 //Load From File
 jsonfile.readFile(file, function (err, obj) {
-    // console.dir(obj)
     crawl(0, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
         winston.log('debug', res);
     });
-})
+});
 
