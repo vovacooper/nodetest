@@ -328,7 +328,7 @@ Article.createFromJson = function (raw_article, callback) {
 
         title: raw_article.title,
         type: raw_article.type,
-        pages: raw_article.pages,
+        num_of_pages: raw_article.num_of_pages,
 
         source: raw_article.source,
 
