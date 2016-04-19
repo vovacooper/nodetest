@@ -146,7 +146,7 @@ var crawl = function (i, lolwotlist, callback) {
 // var lolwotlist = [];
 // var get_links = function (offset, callback) {
 //     winston.log('debug',"offset: " + offset);
-//     request('http://www.lolwot.com/posts.php?category=home&cb=1460288040395&offset=' + offset, function (error, response, html) {
+//     request('http://www.lolwot.com/posts.php?category=home&cb=1461066990121&offset=' + offset, function (error, response, html) {
 //         if (!error && response.statusCode == 200 && html != "[]") {
 //             var obj = eval(html);
 //             lolwotlist = lolwotlist.concat(obj);
@@ -166,9 +166,9 @@ var crawl = function (i, lolwotlist, callback) {
 //     winston.log('debug',"done writing to file");
 // })
 
-//Load From File
+// Load From File
 jsonfile.readFile(file, function (err, obj) {
-    crawl(3372, obj, function (err, res) {
+    crawl(0, obj, function (err, res) {
         if (err) {
             winston.log('debug', err);
         }
