@@ -44,7 +44,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
         article.description = $($("article > p")[0]).text();
 
         var num_of_pages = parseInt($(".page-nav-number").text().split(" ")[3]);
-        
+
         $('article').attr('class').split(/\s+/).forEach(function (val) {
             var arr = val.split(/-+/g);
             if (arr[0] == 'category') {
@@ -55,7 +55,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             }
         });
 
-        for (var j = 0; j < num_of_pages; j++) {
+        for (var j = 0; j < pages.length; j++) {
             $ = cheerio.load(pages[j]);
             var num_pages = $('article h2').length;
 
@@ -84,34 +84,33 @@ var crawlForSlideshow = function (url, image_url, callback) {
         callback(undefined, article);
     };
 
+    var add_pages = function (page_num, num_of_pages, callback) {
+        if(page_num > num_of_pages){
+            callback(undefined);
+            return;
+        }
+        request(url + '/' + page_num, function (error, response, html) {
+            if (!error && response.statusCode == 200) {
+                // winston.log('debug',html);
+                pages.push(html);
+                add_pages(page_num + 1, num_of_pages, callback);
+            }
+        });
+    };
+
     request(url + '/1', function (error, response, html) {
         if (!error && response.statusCode == 200) {
             // winston.log('debug',html);
             pages.push(html);
-            request(url + '/2', function (error, response, html) {
-                if (!error && response.statusCode == 200) {
-                    // winston.log('debug',html);
-                    pages.push(html);
-                    request(url + '/3', function (error, response, html) {
-                        if (!error && response.statusCode == 200) {
-                            // winston.log('debug',html);
-                            pages.push(html);
-                            request(url + '/4', function (error, response, html) {
-                                if (!error && response.statusCode == 200) {
-                                    // winston.log('debug',html);
-                                    pages.push(html);
-                                    request(url + '/5', function (error, response, html) {
-                                        if (!error && response.statusCode == 200) {
-                                            // winston.log('debug',html);
-                                            pages.push(html);
-                                            parsefunction();
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
+            $ = cheerio.load(pages[0]);
+            var num_of_pages = parseInt($(".page-nav-number").text().split(" ")[3]);
+
+            add_pages(2, num_of_pages, function(err){
+                if(err){
+                    callback(err);
+                    return;
                 }
+                parsefunction();
             });
         }
     });
@@ -122,7 +121,7 @@ var crawl = function (i, lolwotlist, callback) {
     if (i > lolwotlist.length) {
         callback(undefined, "Done");
     }
-    if(lolwotlist[i]["ribbon-type"] != "list"){
+    if (lolwotlist[i]["ribbon-type"] != "list") {
         winston.log('debug', i + " - type: " + lolwotlist[i]["ribbon-type"] + " is not list");
         crawl(i + 1, lolwotlist, callback);
         return;
