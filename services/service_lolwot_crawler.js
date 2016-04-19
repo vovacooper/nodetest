@@ -17,7 +17,7 @@ var jsonfile = require('jsonfile')
 var util = require('util')
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
-var file = appDir + '/../tmp/data.json'
+var file = appDir + '/../jsondata/data.json'
 
 var crawlForSlideshow = function (url, image_url, callback) {
     var pages = [];
@@ -157,14 +157,14 @@ var crawl = function (i, lolwotlist, callback) {
 //             callback(error, lolwotlist);
 //         }
 //     });
-// }
+// };
 //
 // get_links(0, function (err, res) {
 //     jsonfile.writeFile(file, res, function (err) {
 //         console.error(err)
 //     })
 //     winston.log('debug',"done writing to file");
-// })
+// });
 
 // Load From File
 jsonfile.readFile(file, function (err, obj) {
