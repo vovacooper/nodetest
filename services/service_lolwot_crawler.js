@@ -75,7 +75,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
                     page.description = $($("article > h2")[i]).next().next().text();
 
                     article.objects.push(page);
-                    article.pages += 1;
+                    article.num_of_pages += 1;
                 } catch (err) {
                     continue;
                 }
