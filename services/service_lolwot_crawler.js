@@ -35,15 +35,16 @@ var crawlForSlideshow = function (url, image_url, callback) {
             description: "",
 
             objects: [],
-            pages: 0
-        }
+            num_of_pages: 0
+        };
 
         $ = cheerio.load(pages[0]);
 
         article.title = $("article > h1").text();
         article.description = $($("article > p")[0]).text();
 
-
+        var num_of_pages = parseInt($(".page-nav-number").text().split(" ")[3]);
+        
         $('article').attr('class').split(/\s+/).forEach(function (val) {
             var arr = val.split(/-+/g);
             if (arr[0] == 'category') {
@@ -54,7 +55,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             }
         });
 
-        for (var j = 0; j < 5; j++) {
+        for (var j = 0; j < num_of_pages; j++) {
             $ = cheerio.load(pages[j]);
             var num_pages = $('article h2').length;
 
@@ -81,76 +82,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
             }
         }
         callback(undefined, article);
-
-        // // page 1
-        // var page1 = {
-        //     type: "img",
-        //     title: "",
-        //     image_url: "",
-        //     width: 0,
-        //     height: 0,
-        //     description: ""
-        // };
-        //
-        // page1.title = $($("article > h2")[0]).text();
-        // page1.image_url = $($("article > p > img")[0]).attr()['src']
-        // page1.description = $($("article > p")[2]).text();
-        //
-        // article.objects.push(page1);
-        //
-        // var page2 = {
-        //     type: "img",
-        //     title: "",
-        //     image_url: "",
-        //     width: 0,
-        //     height: 0,
-        //     description: ""
-        // };
-        //
-        // page2.title = $($("article > h2")[1]).text();
-        // page2.image_url = $($("article > p > img")[1]).attr()['src']
-        // page2.description = $($("article > p")[5]).text();
-        //
-        // article.objects.push(page2);
-
-
-        // for (var i = 1; i < 5; i++) {
-        //     $ = cheerio.load(pages[i]);
-        //     // page 1
-        //     var page1 = {
-        //         type: "img",
-        //         title: "",
-        //         image_url: "",
-        //         width: 0,
-        //         height: 0,
-        //         description: ""
-        //     };
-        //
-        //     page1.title = $($("article > h2")[0]).text();
-        //     page1.image_url = $($("article > p > img")[0]).attr()['src']
-        //     page1.description = $($("article > p")[1]).text();
-        //
-        //     article.objects.push(page1);
-        //
-        //     var page2 = {
-        //         type: "img",
-        //         title: "",
-        //         image_url: "",
-        //         width: 0,
-        //         height: 0,
-        //         description: ""
-        //     };
-        //
-        //     page2.title = $($("article > h2")[1]).text();
-        //     page2.image_url = $($("article > p > img")[1]).attr()['src']
-        //     page2.description = $($("article > p")[4]).text();
-        //
-        //     article.objects.push(page2);
-        // }
-
-        // winston.log('debug',article);
-        // callback(undefined, article);
-    }
+    };
 
     request(url + '/1', function (error, response, html) {
         if (!error && response.statusCode == 200) {

@@ -111,7 +111,7 @@ var crawlForSlideshow = function (num, callback) {
             }
             pages.push(article.objects[article.objects.length - 1]); // last one
             article.objects = pages;
-            article.pages = article.objects.length;
+            article.num_of_pages = article.objects.length;
 
             Article.createFromJson(article, callback);
             // winston.log('debug',"-----GOOD----" + num);
