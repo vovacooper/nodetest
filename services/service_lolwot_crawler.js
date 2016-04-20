@@ -85,7 +85,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
     };
 
     var add_pages = function (page_num, num_of_pages, callback) {
-        if(page_num > num_of_pages){
+        if (page_num > num_of_pages) {
             callback(undefined);
             return;
         }
@@ -103,15 +103,18 @@ var crawlForSlideshow = function (url, image_url, callback) {
             // winston.log('debug',html);
             pages.push(html);
             $ = cheerio.load(pages[0]);
-            var num_of_pages = parseInt($(".page-nav-number").text().split(" ")[3]);
-
-            add_pages(2, num_of_pages, function(err){
-                if(err){
-                    callback(err);
-                    return;
-                }
-                parsefunction();
-            });
+            if ($(".page-nav-number").length > 0) {
+                var num_of_pages = parseInt($(".page-nav-number").text().split(" ")[3]);
+                add_pages(2, num_of_pages, function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    parsefunction();
+                });
+            }else{
+                callback("Not a list");
+            }
         }
     });
 };
@@ -120,6 +123,7 @@ var crawlForSlideshow = function (url, image_url, callback) {
 var crawl = function (i, lolwotlist, callback) {
     if (i > lolwotlist.length) {
         callback(undefined, "Done");
+        return;
     }
     if (lolwotlist[i]["ribbon-type"] != "list") {
         winston.log('debug', i + " - type: " + lolwotlist[i]["ribbon-type"] + " is not list");
@@ -129,6 +133,8 @@ var crawl = function (i, lolwotlist, callback) {
     crawlForSlideshow(lolwotlist[i].link, lolwotlist[i].image, function (err, article) {
         if (err) {
             winston.log('debug', err);
+            crawl(i + 1, lolwotlist, callback);
+            return;
         }
         Article.createFromJson(article, function (err, article) {
             if (err) {
