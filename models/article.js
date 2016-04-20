@@ -219,6 +219,25 @@ Article.getRandom = function (callback) {
         callback(null, new Article(results[0]['article']));
     });
 };
+//match (a:science)<-[:IS]-(b:Article) return b.id;
+Article.getRandomByCategory = function (category, callback) {
+    var query = [
+        'MATCH (:'+category+')<-[:IS]-(a:Article)',
+        'WITH   count(a) as count ,collect(a) as collection',
+        'RETURN collection[toInt(count * rand())] as article'
+    ].join('\n');
+
+    db.cypher({
+        query: query
+    }, function (err, results) {
+        if (err) {
+            // console.log(err);
+            callback(err);
+            return
+        }
+        callback(null, new Article(results[0]['article']));
+    });
+};
 
 // Creates the user and persists (saves) it to the db, incl. indexing it:
 Article.create = function (props, callback) {
