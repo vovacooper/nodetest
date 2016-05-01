@@ -346,6 +346,7 @@ Article.createFromJson = function (raw_article, callback) {
         source_url: raw_article.source_url,
 
         title: raw_article.title,
+        original_title: raw_article.title,
         type: raw_article.type,
         num_of_pages: raw_article.num_of_pages,
 
@@ -353,6 +354,7 @@ Article.createFromJson = function (raw_article, callback) {
 
         image_url: raw_article.image_url,
         description: raw_article.description,
+        original_description: raw_article.description,
 
         status: "pending"
     };
